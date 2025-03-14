@@ -46,46 +46,55 @@ const imageUpload = multer({
 
 // Image-uppladdningsroute
 // Bilduppladdningsroute
-router.post("/image", imageUpload.single("imageFile"), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "Ingen fil har laddats upp" });
+router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ message: "Inga filer har laddats upp" });
   }
 
-  // Sätt filens path
-  const uploadedImagePath = path.resolve(
-    "public",
-    "uploads",
-    "images",
-    req.file.filename
-  );
+  const results = [];
 
-  // Sätt output path för den konverterade bilden
-  const outputImagePath = path.resolve(
-    "public",
-    "uploads",
-    "images",
-    "converted-" + req.file.filename
-  );
+  // Processa varje fil
+  for (const file of req.files) {
+    // Sätt filens path
+    const uploadedImagePath = path.resolve(
+      "public",
+      "uploads",
+      "images",
+      file.filename
+    );
 
-  try {
-    // Komprimera och konvertera bilden till 8MB med sharp
-    await sharp(uploadedImagePath)
-      // .resize({ width: 1920 }) // Exempel på begränsning av storlek
-      .jpeg({ quality: 85 }) // Justera kvalitet för att minska storlek
-      .toFile(outputImagePath);
+    // Sätt output path för den konverterade bilden
+    const outputImagePath = path.resolve(
+      "public",
+      "uploads",
+      "images",
+      "converted-" + file.filename
+    );
 
-    // Skicka respons
-    res.json({
-      message: "Bild konverterad och uppladdad",
-      filename: "converted-" + req.file.filename,
-      path: `/public/uploads/images/converted-${req.file.filename}`,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Fel vid konvertering av bild",
-      error: error.message,
-    });
+    try {
+      // Komprimera och konvertera bilden med sharp
+      await sharp(uploadedImagePath)
+        .jpeg({ quality: 85 }) // Justera kvalitet för att minska storlek
+        .toFile(outputImagePath);
+
+      results.push({
+        originalName: file.originalname,
+        filename: "converted-" + file.filename,
+        path: `/public/uploads/images/converted-${file.filename}`,
+      });
+    } catch (error) {
+      results.push({
+        originalName: file.originalname,
+        error: error.message,
+      });
+    }
   }
+
+  // Skicka respons med resultaten för alla filer
+  res.json({
+    message: `${results.length} bild(er) konverterade och uppladdade`,
+    results: results,
+  });
 });
 
 export default router;

@@ -4,37 +4,18 @@ import "./App.css";
 import logoImage from "./assets/img/1mb-converter-logo.png";
 
 function App() {
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
-  const [downloadLink, setDownloadLink] = useState<string | null>(null);
+  const [downloadLinks, setDownloadLinks] = useState<
+    Array<{ name: string; path: string }>
+  >([]);
   const [progress, setProgress] = useState<number | null>(null);
   const [showProgress, setShowProgress] = useState(false);
   const [converting, setConverting] = useState(false);
 
-  // useEffect(() => {
-  //   const ws = new WebSocket(import.meta.env.VITE_WS_URL);
-
-  //   ws.onmessage = (event) => {
-  //     const data = JSON.parse(event.data);
-  //     if (data.progress !== undefined) {
-  //       setProgress(data.progress);
-  //       setConverting(true);
-  //       setUploading(false);
-  //     }
-
-  //     // If conversion is complete
-  //     if (data.path) {
-  //       setDownloadLink(data.path);
-  //       setConverting(false);
-  //     }
-  //   };
-
-  //   return () => ws.close();
-  // }, []);
-
   useEffect(() => {
-    setDownloadLink(null);
+    setDownloadLinks([]);
     setProgress(null);
     setShowProgress(false);
   }, [file]);
@@ -42,7 +23,7 @@ function App() {
   // Hantera filer via drag & drop
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]);
+      setFile(acceptedFiles);
     }
   }, []);
 
@@ -53,18 +34,18 @@ function App() {
       "image/png": [".png"],
       "image/webp": [".webp"],
     },
-    maxFiles: 1,
+    // maxFiles: 1,
   });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setFile(event.target.files[0]);
+      setFile(Array.from(event.target.files));
     }
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      setMessage("Välj en fil först.");
+    if (!file.length) {
+      setMessage("Välj minst en fil först.");
       return;
     }
 
@@ -72,11 +53,13 @@ function App() {
     setConverting(false);
     setShowProgress(true);
     setMessage("");
-    setDownloadLink(null);
+    setDownloadLinks([]);
     setProgress(0);
 
     const formData = new FormData();
-    formData.append("imageFile", file);
+    file.forEach((file) => {
+      formData.append("imageFiles", file);
+    });
 
     // Skapa en XMLHttpRequest för att övervaka uppladdningen
     const xhr = new XMLHttpRequest();
@@ -100,8 +83,12 @@ function App() {
 
         // Only set download link if it's available immediately
         // Otherwise, it will likely be set by the WebSocket updates
-        if (data.path) {
-          setDownloadLink(data.path);
+        if (data.results && data.results.length) {
+          const links = data.results.map((result: any) => ({
+            name: result.originalName,
+            path: result.path,
+          }));
+          setDownloadLinks(links);
           setConverting(false);
         }
       } else {
@@ -132,9 +119,9 @@ function App() {
         <div {...getRootProps()} className="dropzone">
           <input {...getInputProps()} />
           {isDragActive ? (
-            <p>Släpp filen här...</p>
+            <p>Släpp filerna här...</p>
           ) : (
-            <p>Dra & släpp en fil här, eller klicka för att välja en fil</p>
+            <p>Dra & släpp flera filer här, eller klicka för att välja filer</p>
           )}
         </div>
         {/* Alternativ: Välj fil via knapp */}
@@ -144,23 +131,43 @@ function App() {
           onChange={handleFileChange}
           style={{ display: "none" }} // Döljer den ursprungliga filväljaren
           id="file-upload"
+          multiple // Tillåt flera filer
         />
 
         <label htmlFor="file-upload" className="custom-file-upload">
-          {file ? file.name : "Välj en fil"}
+          {file.length > 0 ? `${file.length} filer valda` : "Välj filer"}
         </label>
 
-        {downloadLink ? (
+        {/* Visa lista på valda filer om det finns några */}
+        {file.length > 0 && (
+          <div className="file-list">
+            <p>Valda filer:</p>
+            <ul>
+              {file.map((file, index) => (
+                <li key={index}>{file.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {downloadLinks.length > 0 ? (
           <div className="download-container">
-            <a href={downloadLink} download className="download-button">
-              ⬇ Hämta bild
-            </a>
+            {downloadLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.path}
+                download
+                className="download-button"
+              >
+                ⬇ Hämta {link.name}
+              </a>
+            ))}
           </div>
         ) : (
           <button
             type="button"
             onClick={handleUpload}
-            disabled={!file || uploading || converting}
+            disabled={!file.length || uploading || converting}
           >
             {uploading
               ? "Laddar upp..."
@@ -181,7 +188,7 @@ function App() {
                   : converting
                   ? "Konvertering"
                   : "Klar"}
-                : {downloadLink ? "100" : progress.toFixed(1)}%
+                : {downloadLinks.length > 0 ? "100" : progress.toFixed(1)}%
               </p>
             )}
           </div>
