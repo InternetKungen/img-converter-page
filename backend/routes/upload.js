@@ -51,6 +51,8 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
     return res.status(400).json({ message: "Inga filer har laddats upp" });
   }
 
+  const targetFormat = req.body.format || "jpeg";
+
   const results = [];
 
   // Processa varje fil
@@ -63,24 +65,43 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
       file.filename
     );
 
+    // Create new filename with the correct extension
+    const fileNameWithoutExt = file.filename.substring(
+      0,
+      file.filename.lastIndexOf(".")
+    );
+    const newFileName = `converted-${fileNameWithoutExt}.${targetFormat}`;
+
     // Sätt output path för den konverterade bilden
     const outputImagePath = path.resolve(
       "public",
       "uploads",
       "images",
-      "converted-" + file.filename
+      newFileName
     );
 
     try {
-      // Komprimera och konvertera bilden med sharp
-      await sharp(uploadedImagePath)
-        .jpeg({ quality: 85 }) // Justera kvalitet för att minska storlek
-        .toFile(outputImagePath);
+      // Compress and convert the image with sharp based on targetFormat
+      let sharpImage = sharp(uploadedImagePath);
+
+      if (targetFormat === "jpeg" || targetFormat === "jpg") {
+        sharpImage = sharpImage.jpeg({ quality: 85 });
+      } else if (targetFormat === "png") {
+        sharpImage = sharpImage.png({ compressionLevel: 6 });
+      } else if (targetFormat === "webp") {
+        sharpImage = sharpImage.webp({ quality: 85 });
+      } else if (targetFormat === "avif") {
+        sharpImage = sharpImage.avif({ quality: 80 });
+      } else if (targetFormat === "tiff") {
+        sharpImage = sharpImage.tiff({ quality: 80 });
+      }
+
+      await sharpImage.toFile(outputImagePath);
 
       results.push({
         originalName: file.originalname,
-        filename: "converted-" + file.filename,
-        path: `/public/uploads/images/converted-${file.filename}`,
+        filename: newFileName,
+        path: `/public/uploads/images/${newFileName}`,
       });
     } catch (error) {
       results.push({
