@@ -108,20 +108,23 @@
     outline-color: #ffd43f;
     outline-width: 0px;
     outline-style: double;
-    outline-offset: -5px;
+    outline-offset: -55px;
+    border-radius: 20px;
   }
   12.5% {
     outline-color: #fc9200;
   }
   25% {
     outline-color: #ff8e6c;
+    outline-offset: 0px;
+    border-radius: 10px;
   }
   37.5% {
     outline-color: #f8728a;
   }
   50% {
     outline-color: #a079ba8c;
-    outline-width: 22px;
+    outline-width: 36px;
     outline-style: double;
     outline-offset: 0px;
   }
