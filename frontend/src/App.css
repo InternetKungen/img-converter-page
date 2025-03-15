@@ -19,7 +19,7 @@
   max-width: 100%;
   color: #fdfdfd;
   border-radius: 4px;
-  outline: 5px double #07a6e8;
+  outline: 5px solid #000;
   gap: 20px;
   padding: 20px;
   transition: outline-color 0.3s ease, outline-width 0.3s ease,
