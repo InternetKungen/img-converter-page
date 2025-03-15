@@ -551,17 +551,14 @@ input[type="file"] {
   unicode-bidi: isolate;
 }
 
-/* .container-extra-border::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  outline: 1px solid #359522;
-  transition: border 0.3s ease;
+.button,
+h2,
+.format-selector,
+.dropzone,
+.custom-file-upload,
+.download-button-inline,
+.file-name,
+.progress-container,
+.progress-bar {
+  z-index: 2;
 }
-
-.container-extra-border::after:hover {
-  outline: 100px double #4782ac;
-} */
