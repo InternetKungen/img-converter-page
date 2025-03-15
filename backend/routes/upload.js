@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import sharp from "sharp";
+import archiver from "archiver";
 
 const router = express.Router();
 
@@ -55,6 +56,13 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
 
   const results = [];
 
+  //zipfile addition
+  const zipFilename = `converted-images-${Date.now()}.zip`;
+  const zipFilePath = path.resolve("public", "uploads", "images", zipFilename);
+
+  const archive = archiver("zip", { zlib: { level: 9 } });
+  const output = fs.createWriteStream(zipFilePath);
+  archive.pipe(output);
   // Processa varje fil
   for (const file of req.files) {
     // Sätt filens path
@@ -68,11 +76,6 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
     // Create new filename with the correct extension
     const originalNameWithoutExt = path.parse(file.originalname).name;
     const fileNameWithoutExt = `${originalNameWithoutExt}-${Date.now()}`;
-    // const fileNameWithoutExt = file.filename.substring(
-    //   0,
-    //   file.filename.lastIndexOf(".")
-    // );
-    // const newFileName = `converted-${fileNameWithoutExt}.${targetFormat}`;
     const newFileName = `converted-${fileNameWithoutExt}.${targetFormat}`;
 
     // Sätt output path för den konverterade bilden
@@ -100,6 +103,7 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
       }
 
       await sharpImage.toFile(outputImagePath);
+      archive.file(outputImagePath, { name: newFileName });
 
       results.push({
         originalName: file.originalname,
@@ -114,10 +118,14 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
     }
   }
 
+  //zipfile addition
+  await archive.finalize();
+
   // Skicka respons med resultaten för alla filer
   res.json({
     message: `${results.length} bild(er) konverterade och uppladdade`,
     results: results,
+    zipDownloadLink: `/public/uploads/images/${zipFilename}`,
   });
 });
 

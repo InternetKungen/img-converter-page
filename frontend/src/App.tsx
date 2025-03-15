@@ -14,6 +14,7 @@ function App() {
   const [showProgress, setShowProgress] = useState(false);
   const [converting, setConverting] = useState(false);
   const [targetFormat, setTargetFormat] = useState("jpeg");
+  const [zipDownloadLink, setZipDownloadLink] = useState<string | null>(null);
 
   useEffect(() => {
     setDownloadLinks([]);
@@ -112,6 +113,7 @@ function App() {
             path: result.path,
           }));
           setDownloadLinks(links);
+          setZipDownloadLink(data.zipDownloadLink);
           setConverting(false);
         }
       } else {
@@ -191,6 +193,26 @@ function App() {
               : "Välj filer (max 10)"}
           </label>
 
+          {zipDownloadLink && (
+            <a href={zipDownloadLink} download className="download-button">
+              ⬇ Ladda ner alla som ZIP
+            </a>
+          )}
+
+          {downloadLinks.length === 0 && (
+            <button
+              type="button"
+              onClick={handleUpload}
+              disabled={!file.length || uploading || converting}
+            >
+              {uploading
+                ? "Laddar upp..."
+                : converting
+                ? "Konverterar..."
+                : "Ladda upp"}
+            </button>
+          )}
+
           {/* Visa lista på valda filer om det finns några */}
           {file.length > 0 && (
             <div className="file-list">
@@ -215,20 +237,6 @@ function App() {
                 })}
               </ul>
             </div>
-          )}
-
-          {downloadLinks.length === 0 && (
-            <button
-              type="button"
-              onClick={handleUpload}
-              disabled={!file.length || uploading || converting}
-            >
-              {uploading
-                ? "Laddar upp..."
-                : converting
-                ? "Konverterar..."
-                : "Ladda upp"}
-            </button>
           )}
 
           {/* Progress container med animation */}
