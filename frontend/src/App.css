@@ -179,31 +179,76 @@
 
 @keyframes buttonHover {
   0% {
-    background: #4782ac;
+    border-color: #2265956c;
   }
   12.5% {
-    background: #a079ba; /* a079ba */
+    border-color: #a079ba; /* a079ba */
   }
   25% {
-    background: #f8728a; /* f8728a */
+    border-color: #f8728a; /* f8728a */
   }
   37.5% {
-    background: #ff8e6c; /* ff8e6c */
+    border-color: #ff8e6c; /* ff8e6c */
   }
   50% {
-    background: #fc9200; /* fc9200 */
+    border-color: #fc9200; /* fc9200 */
   }
   62.5% {
-    background: #ffd43f; /* ffd43f */
+    border-color: #ffd43f; /* ffd43f */
   }
   75% {
-    background: #e0e25b; /* e0e25b */
+    border-color: #e0e25b; /* e0e25b */
   }
   87.5% {
-    background: #0fa96b; /* 0fa96b */
+    border-color: #0fa96b; /* 0fa96b */
   }
   100% {
-    background: #4782ac;
+    border-color: #4782ac6c;
+  }
+}
+
+@keyframes buttonHoverOutline {
+  0% {
+    outline-color: #4782ac6b;
+  }
+  12.5% {
+    outline-color: #a079ba; /* a079ba */
+  }
+  25% {
+    outline-color: #f8728a; /* f8728a */
+  }
+  37.5% {
+    outline-color: #ff8e6c; /* ff8e6c */
+  }
+  50% {
+    outline-color: #fc9200; /* fc9200 */
+  }
+  62.5% {
+    outline-color: #ffd43f; /* ffd43f */
+  }
+  75% {
+    outline-color: #e0e25b; /* e0e25b */
+  }
+  87.5% {
+    outline-color: #0fa96b; /* 0fa96b */
+  }
+  100% {
+    outline-color: #4782ac6b;
+  }
+}
+
+@keyframes buttonHoverOutlineOffset {
+  0% {
+    outline-offset: 0px;
+    outline-width: 0px;
+  }
+  50% {
+    outline-offset: 8px;
+    outline-width: 4px;
+  }
+  100% {
+    outline-offset: 13px;
+    outline-width: -10px;
   }
 }
 
@@ -222,6 +267,7 @@ button {
   color: #fdfdfd;
   border-radius: 4px;
   border: 2px solid #226695;
+  outline: 1px solid #07a5e800;
   cursor: pointer;
   text-transform: uppercase;
   font-family: "Tiny5", sans-serif;
@@ -230,7 +276,8 @@ button {
   font-size: 18px;
   text-shadow: 1px 1px 0px #ff8e6c, -1px -1px 0px #ff8e6c, 1px -1px 0px #ff8e6c,
     -1px 1px 0px #ff8e6c;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease,
+    background 0.3s ease;
 }
 
 button:hover {
@@ -240,7 +287,9 @@ button:hover {
   color: #fdfdfd;
   background: linear-gradient(to top, #4782ac, #4782ac);
   /* box-shadow: 0 0 30px #226695; */
-  animation: buttonHover 6s ease-in-out infinite;
+  animation: buttonHover 1.5s ease-in-out infinite,
+    buttonHoverOutline 1.5s ease-in-out infinite,
+    buttonHoverOutlineOffset 0.4s ease-in-out infinite;
 }
 button:focus,
 button:focus-visible {
