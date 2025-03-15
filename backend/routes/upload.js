@@ -108,7 +108,7 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
       results.push({
         originalName: file.originalname,
         filename: newFileName,
-        path: `/public/uploads/images/${newFileName}`,
+        path: `/uploads/images/${newFileName}`,
       });
     } catch (error) {
       results.push({
@@ -125,7 +125,7 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
   res.json({
     message: `${results.length} bild(er) konverterade och uppladdade`,
     results: results,
-    zipDownloadLink: `/public/uploads/images/${zipFilename}`,
+    zipDownloadLink: `/uploads/images/${zipFilename}`,
   });
 });
 
