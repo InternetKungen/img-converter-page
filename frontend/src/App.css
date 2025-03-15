@@ -105,11 +105,11 @@
 
 @keyframes borderAnimationExtra {
   0% {
-    outline-color: #ffd43f;
+    outline-color: #ffd43f8c;
     outline-width: 0px;
     outline-style: double;
     outline-offset: -55px;
-    border-radius: 20px;
+    border-radius: 50px;
   }
   12.5% {
     outline-color: #fc9200;
@@ -179,31 +179,31 @@
 
 @keyframes buttonHover {
   0% {
-    border-color: #a079ba;
+    background: #4782ac;
   }
   12.5% {
-    border-color: #fc9200;
+    background: #a079ba; /* a079ba */
   }
   25% {
-    border-color: #ff8e6c;
+    background: #f8728a; /* f8728a */
   }
   37.5% {
-    border-color: #f8728a;
+    background: #ff8e6c; /* ff8e6c */
   }
   50% {
-    border-color: #a079ba8c;
+    background: #fc9200; /* fc9200 */
   }
   62.5% {
-    border-color: #07a6e8;
+    background: #ffd43f; /* ffd43f */
   }
   75% {
-    border-color: #0fa96b;
+    background: #e0e25b; /* e0e25b */
   }
   87.5% {
-    border-color: #07a6e8;
+    background: #0fa96b; /* 0fa96b */
   }
   100% {
-    border-color: #a079ba;
+    background: #4782ac;
   }
 }
 
@@ -230,8 +230,7 @@ button {
   font-size: 18px;
   text-shadow: 1px 1px 0px #ff8e6c, -1px -1px 0px #ff8e6c, 1px -1px 0px #ff8e6c,
     -1px 1px 0px #ff8e6c;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease,
-    background 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
 }
 
 button:hover {
@@ -241,6 +240,7 @@ button:hover {
   color: #fdfdfd;
   background: linear-gradient(to top, #4782ac, #4782ac);
   /* box-shadow: 0 0 30px #226695; */
+  animation: buttonHover 6s ease-in-out infinite;
 }
 button:focus,
 button:focus-visible {
@@ -262,6 +262,7 @@ button:disabled {
   /* font-family: "Tiny5", sans-serif;
   font-weight: 400;
   font-style: normal; */
+  animation: none;
 }
 
 input[type="file"] {

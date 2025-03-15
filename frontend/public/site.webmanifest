@@ -1,6 +1,6 @@
 {
-  "name": "1mb-converter",
-  "short_name": "1mb",
+  "name": "img-converter",
+  "short_name": "img-convrt",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
