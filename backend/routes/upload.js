@@ -66,10 +66,13 @@ router.post("/image", imageUpload.array("imageFiles", 10), async (req, res) => {
     );
 
     // Create new filename with the correct extension
-    const fileNameWithoutExt = file.filename.substring(
-      0,
-      file.filename.lastIndexOf(".")
-    );
+    const originalNameWithoutExt = path.parse(file.originalname).name;
+    const fileNameWithoutExt = `${originalNameWithoutExt}-${Date.now()}`;
+    // const fileNameWithoutExt = file.filename.substring(
+    //   0,
+    //   file.filename.lastIndexOf(".")
+    // );
+    // const newFileName = `converted-${fileNameWithoutExt}.${targetFormat}`;
     const newFileName = `converted-${fileNameWithoutExt}.${targetFormat}`;
 
     // Sätt output path för den konverterade bilden
